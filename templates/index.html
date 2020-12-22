@@ -19,9 +19,7 @@
 		</nav>
 		<div class="container">
 			<h1 class="text-center py-2 font-weight-light">Play Chess</h1>
-
 			<div class="row">
-
 				<div class="col-md-6 mb-5 nopadding text-center">
 					<div class="center">
 						<button class="play">Play</button>
@@ -37,107 +35,99 @@
 					</div>
 				</div>
 			</div>
-
 			<style>
 
 			</style>
-
-
 			<script>
-				var board = null
-				var game = new Chess()
-				var $status = $('#status')
-				var $pgn = $('#pgn')
+			var board = null
+			var game = new Chess()
+			var $status = $('#status')
+			var $pgn = $('#pgn')
 
-				function moveMove(bmove) {
-					var possibleMoves = game.moves()
+			function moveMove(bmove) {
+				var possibleMoves = game.moves()
 					// exit if the game is over
-					if (game.game_over()) return
-					game.move(bmove, {
-						sloppy: true
-					})
-					board.position(game.fen())
-					window.setTimeout(moveMove, 500)
-					updateStatus()
-				}
+				if(game.game_over()) return
+				game.move(bmove, {
+					sloppy: true
+				})
+				board.position(game.fen())
+				window.setTimeout(moveMove, 500)
+				updateStatus()
+			}
 
-				function updateStatus() {
-					var status = ''
-					var moveColor = 'White'
-					if (game.turn() === 'b') {
-						moveColor = 'Black'
-					} else {
-						moveColor = 'White'
-					}
-					// checkmate?
-					if (game.in_checkmate()) {
-						status = 'Game over, ' + moveColor + ' is in checkmate.'
-					}
-					// draw?
-					else if (game.in_draw()) {
-						status = 'Game over, drawn position'
-					}
-					// game still on
-					else {
-						status = moveColor + ' to move'
+			function updateStatus() {
+				var status = ''
+				var moveColor = 'White'
+				if(game.turn() === 'b') {
+					moveColor = 'Black'
+				} else {
+					moveColor = 'White'
+				}
+				// checkmate?
+				if(game.in_checkmate()) {
+					status = 'Game over, ' + moveColor + ' is in checkmate.'
+				}
+				// draw?
+				else if(game.in_draw()) {
+					status = 'Game over, drawn position'
+				}
+				// game still on
+				else {
+					status = moveColor + ' to move'
 						// check?
-						if (game.in_check()) {
-							status += ', ' + moveColor + ' is in check'
-						}
+					if(game.in_check()) {
+						status += ', ' + moveColor + ' is in check'
 					}
-					$status.html(status)
-					$pgn.html(game.pgn())
 				}
-				var config = {
-					draggable: true,
-					position: 'start'
-				}
-				board = Chessboard('myBoard', config)
-				$(document).ready(function () {
-					//connect to the socket server.
-
-
-					$(".play").click(function () {
-						$(".board").css("visibility", "visible");
-						$(".play").hide();
-						$(".stop").css("visibility", "visible");
-						var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
-						socket.emit('btn', { data: 'I\'m connected!' });
-
-						var move_received = [];
-						//receive details from server
-						socket.on('move', function (msg) {
-							console.log("Received move" + msg.bestmove);
-							//maintain a list of ten move
-							if (move_received.length >= 10) {
-								move_received.shift()
-							}
-							move_received.push(msg.bestmove);
-							moveMove(msg.bestmove);
-						});
-
-						if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-							socket.emit("stop", { data: 'I\'m reseted' });
-							board.position("start");
-							game.reset();
-
-						}
-						$(".stop").click(function () {
-							$(".board").css("visibility", "hidden");
-							$(".play").fadeIn();
-							$(".stop").css("visibility", "hidden");
-							socket.emit("stop", { data: 'I\'m reseted' });
-							board.position("start");
-							game.reset();
-						});
-
+				$status.html(status)
+				$pgn.html(game.pgn())
+			}
+			var config = {
+				draggable: true,
+				position: 'start'
+			}
+			board = Chessboard('myBoard', config)
+			$(document).ready(function() {
+				//connect to the socket server.
+				$(".play").click(function() {
+					$(".board").css("visibility", "visible");
+					$(".play").hide();
+					$(".stop").css("visibility", "visible");
+					var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+					socket.emit('btn', {
+						data: 'I\'m connected!'
 					});
-
-
-
-
-
+					var move_received = [];
+					//receive details from server
+					socket.on('move', function(msg) {
+						console.log("Received move" + msg.bestmove);
+						//maintain a list of ten move
+						if(move_received.length >= 10) {
+							move_received.shift()
+						}
+						move_received.push(msg.bestmove);
+						moveMove(msg.bestmove);
+					});
+					$(window).on('unload', function() {
+						socket.emit("stop", {
+							data: 'I\'m reloaded'
+						});
+						board.position("start");
+						game.reset();
+					});
+					$(".stop").click(function() {
+						$(".board").css("visibility", "hidden");
+						$(".play").fadeIn();
+						$(".stop").css("visibility", "hidden");
+						socket.emit("stop", {
+							data: 'I\'m reseted'
+						});
+						board.position("start");
+						game.reset();
+					});
 				});
+			});
 			</script>
 		</div>
 	</div>

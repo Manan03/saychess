@@ -21,7 +21,7 @@ board = chess.Board()
 
 def bestmove() -> None:
     engine = chess.engine.SimpleEngine.popen_uci(
-        "C:\\Users\\manan\\Documents\\chess\\stockfish-11-win\\stockfish-11-win\\Windows\\stockfish_20011801_32bit.exe"
+        "stockfish\\stockfish.exe"
     )
     global board
     #thread_stop_event.
