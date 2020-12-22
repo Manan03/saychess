@@ -117,21 +117,23 @@
 						});
 
 						if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-							socket.emit("reset", { data: 'I\'m reseted' });
+							socket.emit("stop", { data: 'I\'m reseted' });
 							board.position("start");
 							game.reset();
+
 						}
+						$(".stop").click(function () {
+							$(".board").css("visibility", "hidden");
+							$(".play").fadeIn();
+							$(".stop").css("visibility", "hidden");
+							socket.emit("stop", { data: 'I\'m reseted' });
+							board.position("start");
+							game.reset();
+						});
 
 					});
 
-					$(".stop").click(function () {
-						$(".board").css("visibility", "hidden");
-						$(".play").fadeIn();
-						$(".stop").css("visibility", "hidden");
-						socket.emit("stop", { data: 'I\'m reseted' });
-						board.position("start");
-						game.reset();
-					});
+
 
 
 
