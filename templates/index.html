@@ -2,135 +2,49 @@
 <html>
 
 <head>
-	<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/chessboard-1.0.0.css')}}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css')}}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}" />
-	<script src="{{ url_for('static', filename='js/chessboard-1.0.0.min.js')}}"></script>
-	<script src="{{ url_for('static', filename='js/chess.js/chess.js')}}"></script>
+    <title>Chess</title>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css')}}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/indexstyle.css')}}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
 <body>
-	<div class="bg-light">
-		<nav class="navbar navbar-light bg-dark">
-			<div class="text-light" style="font-size: 30px;">Play Chess</div>
-		</nav>
-		<div class="container">
-			<h1 class="text-center py-2 font-weight-light">Play Chess</h1>
-			<div class="row">
-				<div class="col-md-6 mb-5 nopadding text-center">
-					<div class="center">
-						<button class="play">Play</button>
-					</div>
-					<div class="board" id="myBoard" style="visibility: hidden;"></div>
-				</div>
-				<div class="col-md-6 jumbotron bg-dark text-light mb-5">
-					<div id="status" class="font-weight-bold"></div>
-					<label>PGN:</label>
-					<div id="pgn" class="font-weight-light font-italic"></div>
-					<div class="corner">
-						<button class="stop" style="visibility: hidden;">Stop</button>
-					</div>
-				</div>
-			</div>
-			<style>
+    <div class="bg-light">
+        <nav class="navbar bg-dark">
+            <div class="text-light" style="font-size: 30px;">Play Chess</div>
+        </nav>
+    </div>
+    <div class="flex-page">
+        <div class="side-nav bg-dark">
+            <ul>
+                <li>
+                    <a href="{{ url_for('comvscom') }}">Com vs Com</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('playcom') }}">Play Com</a>
+                </li>
+            </ul>
+        </div>
 
-			</style>
-			<script>
-			var board = null
-			var game = new Chess()
-			var $status = $('#status')
-			var $pgn = $('#pgn')
 
-			function moveMove(bmove) {
-				var possibleMoves = game.moves()
-					// exit if the game is over
-				if(game.game_over()) return
-				game.move(bmove, {
-					sloppy: true
-				})
-				board.position(game.fen())
-				window.setTimeout(moveMove, 500)
-				updateStatus()
-			}
 
-			function updateStatus() {
-				var status = ''
-				var moveColor = 'White'
-				if(game.turn() === 'b') {
-					moveColor = 'Black'
-				} else {
-					moveColor = 'White'
-				}
-				// checkmate?
-				if(game.in_checkmate()) {
-					status = 'Game over, ' + moveColor + ' is in checkmate.'
-				}
-				// draw?
-				else if(game.in_draw()) {
-					status = 'Game over, drawn position'
-				}
-				// game still on
-				else {
-					status = moveColor + ' to move'
-						// check?
-					if(game.in_check()) {
-						status += ', ' + moveColor + ' is in check'
-					}
-				}
-				$status.html(status)
-				$pgn.html(game.pgn())
-			}
-			var config = {
-				draggable: true,
-				position: 'start'
-			}
-			board = Chessboard('myBoard', config)
-			$(document).ready(function() {
-				//connect to the socket server.
-				$(".play").click(function() {
-					$(".board").css("visibility", "visible");
-					$(".play").hide();
-					$(".stop").css("visibility", "visible");
-					var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
-					socket.emit('btn', {
-						data: 'I\'m connected!'
-					});
-					var move_received = [];
-					//receive details from server
-					socket.on('move', function(msg) {
-						console.log("Received move" + msg.bestmove);
-						//maintain a list of ten move
-						if(move_received.length >= 10) {
-							move_received.shift()
-						}
-						move_received.push(msg.bestmove);
-						moveMove(msg.bestmove);
-					});
-					$(window).on('unload', function() {
-						socket.emit("stop", {
-							data: 'I\'m reloaded'
-						});
-						board.position("start");
-						game.reset();
-					});
-					$(".stop").click(function() {
-						$(".board").css("visibility", "hidden");
-						$(".play").fadeIn();
-						$(".stop").css("visibility", "hidden");
-						socket.emit("stop", {
-							data: 'I\'m reseted'
-						});
-						board.position("start");
-						game.reset();
-					});
-				});
-			});
-			</script>
-		</div>
-	</div>
+        <div class="content p-5" style="margin: 10%;">
+
+            <div class="square">
+                <a href="{{ url_for('comvscom') }}">
+                    <img class="img-thumbnail" src="../static/img/Group 1.png" alt="" style="border-radius: 20px;">
+                </a>
+            </div>
+            <div class="square">
+                <a href="{{ url_for('playcom') }}">
+                    <img class="img-thumbnail" src="../static/img/Group 2.png" alt="" style="border-radius: 20px;">
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
