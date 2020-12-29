@@ -127,7 +127,8 @@
 }
 
 .play:hover {
-    background-color: #3e8e41
+    background-color: #3e8e41;
+    box-shadow: 0 0 5px #00ff00,
 }
 
 .play:active {

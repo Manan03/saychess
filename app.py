@@ -1,15 +1,15 @@
 # Start with a basic flask app webpage.
 from flask_socketio import SocketIO, emit
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from time import sleep
 from threading import Thread, Event
 import chess.engine
+import os
 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
 app.config["DEBUG"] = False
-
 # turn the flask app into a socketio app
 socketio = SocketIO(app, async_mode=None, logger=False, engineio_logger=False)
 
@@ -20,6 +20,12 @@ playthread = Thread()
 playthread_stop_event = Event()
 
 board = chess.Board()
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 def bestmove_comvscom() -> None:

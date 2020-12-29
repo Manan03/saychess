@@ -12,12 +12,26 @@
 	<script defer src="{{ url_for('static', filename='js/chessboard-1.0.0.min.js')}}"></script>
 	<script defer src="{{ url_for('static', filename='js/chess.js/chess.js')}}"></script>
 	<script defer src="{{ url_for('static', filename='js/playcom_script.js')}}"></script>
+	<link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='img/icons/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='img/icons/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='img/icons/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{ url_for('static', filename='img/icons/site.webmanifest')}}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='img/icons/safari-pinned-tab.svg')}}" color="#5bbad5">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
 </head>
 
 <body>
 	<nav class="p-2 px-5" style="background:  rgba(0,0,0,0.2);">
-		<div class="text-light" style="font-size: 30px;">Play Chess</div>
-	</nav>
+        <div class="text-light" style="font-size: 30px;">
+            <img src="../static/img/logo.png" width="50" height="50" alt="">
+            Say Chess
+        </div>
+    </nav>
 	<div class="flex-page">
 		<div class="side-nav" style="background: rgba(0,0,0,0.2);">
 			<ul>
@@ -29,13 +43,13 @@
 		</div>
 
 		<div class="container">
-			<h1 class="text-center py-2 font-weight-light">Play Chess</h1>
+			<h1 class="text-center py-2 font-weight-light">Say Chess</h1>
 			<div class="row">
 				<div class="col-md-6 mb-5 text-center">
 					<div class="board" id="myBoard"></div>
 					<div class="center overlay"></div>
 					<div class="center">
-						<button class="play">Play</button>
+						<button class="btn btn-block play">Play</button>
 					</div>
 				</div>
 				<div class="col-md-4 jumbotron text-light"
@@ -44,7 +58,7 @@
 					<label>PGN:</label>
 					<div id="pgn" class="font-weight-light font-italic"></div>
 					<div class="corner">
-						<button class="stop" style="visibility: hidden;">Stop</button>
+						<button class="btn btn-block stop" style="visibility: hidden;">Stop</button>
 					</div>
 				</div>
 			</div>
