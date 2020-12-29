@@ -8,10 +8,10 @@ import chess.engine
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 
 # turn the flask app into a socketio app
-socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+socketio = SocketIO(app, async_mode=None, logger=False, engineio_logger=False)
 
 # random number Generator Thread
 thread = Thread()
@@ -30,12 +30,17 @@ def bestmove_comvscom() -> None:
     while not board.is_game_over() and (not thread_stop_event.is_set()):
         result = engine.play(board, chess.engine.Limit(time=0.4))
         board.push(result.move)
-        print(result.move)
-        socketio.emit("move", {"bestmove": str(result.move)}, namespace="/comvscom")
+        socketio.emit("move", {"bestmove": str(
+            result.move)}, namespace="/comvscom")
         socketio.sleep(3)
-    # print(board.result())
     print("Quitting Engine")
     engine.quit()
+
+
+@app.route("/")
+def index():
+    # only by sending this page first will the client be connected to the socketio instance
+    return render_template("index.html")
 
 
 @app.route("/comvscom")
@@ -60,12 +65,6 @@ def playcom():
 def welcome():
     # only by sending this page first will the client be connected to the socketio instance
     return render_template("welcome.html")
-
-
-@app.route("/")
-def index():
-    # only by sending this page first will the client be connected to the socketio instance
-    return render_template("index.html")
 
 
 @socketio.on("connect", namespace="/comvscom")
@@ -110,10 +109,9 @@ def bestmove_playcom() -> None:
         if not board.turn:
             result = engine.play(board, chess.engine.Limit(time=0.4))
             board.push(result.move)
-            print(result.move)
-            socketio.emit("move", {"bestmove": str(result.move)}, namespace="/playcom")
+            socketio.emit("move", {"bestmove": str(
+                result.move)}, namespace="/playcom")
             socketio.sleep(3)
-    # print(board.result())
     print("Quitting Engine")
     engine.quit()
 
@@ -155,9 +153,7 @@ def stop_playcom(data):
 def mymove_playcom(my_move):
     global playthread
     global board
-    print(my_move)
     board.push_san(my_move["data"])
-    print(board.fen())
 
 
 if __name__ == "__main__":
