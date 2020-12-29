@@ -21,19 +21,18 @@ playthread_stop_event = Event()
 
 board = chess.Board()
 
+
 def bestmove_comvscom() -> None:
-    engine = chess.engine.SimpleEngine.popen_uci(
-        "stockfish\\stockfish.exe"
-    )
+    engine = chess.engine.SimpleEngine.popen_uci("stockfish\\stockfish.exe")
     global board
-    #thread_stop_event.
+    # thread_stop_event.
     thread_stop_event.clear()
     while not board.is_game_over() and (not thread_stop_event.is_set()):
         result = engine.play(board, chess.engine.Limit(time=0.4))
         board.push(result.move)
         print(result.move)
         socketio.emit("move", {"bestmove": str(result.move)}, namespace="/comvscom")
-        socketio.sleep(1)
+        socketio.sleep(3)
     # print(board.result())
     print("Quitting Engine")
     engine.quit()
@@ -44,17 +43,29 @@ def comvscom():
     # only by sending this page first will the client be connected to the socketio instance
     return render_template("comvscom.html")
 
+
+@app.route("/login")
+def login():
+    # only by sending this page first will the client be connected to the socketio instance
+    return render_template("login.html")
+
+
 @app.route("/playcom")
 def playcom():
     # only by sending this page first will the client be connected to the socketio instance
     return render_template("playcom.html")
 
+
+@app.route("/welcome")
+def welcome():
+    # only by sending this page first will the client be connected to the socketio instance
+    return render_template("welcome.html")
+
+
 @app.route("/")
 def index():
     # only by sending this page first will the client be connected to the socketio instance
     return render_template("index.html")
-
-
 
 
 @socketio.on("connect", namespace="/comvscom")
@@ -80,6 +91,7 @@ def play_comvscom(data):
         except:
             thread_stop_event.set()
 
+
 @socketio.on("stop", namespace="/comvscom")
 def stop_com(data):
     global thread
@@ -87,8 +99,6 @@ def stop_com(data):
     board.reset()
     if thread.isAlive():
         thread_stop_event.set()
-
-
 
 
 def bestmove_playcom() -> None:
@@ -102,7 +112,7 @@ def bestmove_playcom() -> None:
             board.push(result.move)
             print(result.move)
             socketio.emit("move", {"bestmove": str(result.move)}, namespace="/playcom")
-            socketio.sleep(1)
+            socketio.sleep(3)
     # print(board.result())
     print("Quitting Engine")
     engine.quit()

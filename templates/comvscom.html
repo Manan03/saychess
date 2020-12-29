@@ -2,32 +2,44 @@
 <html>
 
 <head>
-    <title>Engine vs Engine</title>
-	<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+	<title>Engine vs Engine</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/chessboard-1.0.0.css')}}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css')}}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}" />
-	<script src="{{ url_for('static', filename='js/chessboard-1.0.0.min.js')}}"></script>
-	<script src="{{ url_for('static', filename='js/chess.js/chess.js')}}"></script>
+	<script defer src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script defer src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+	<script defer src="{{ url_for('static', filename='js/chessboard-1.0.0.min.js')}}"></script>
+	<script defer src="{{ url_for('static', filename='js/chess.js/chess.js')}}"></script>
+	<script defer src="{{ url_for('static', filename='js/comvscom_script.js')}}"></script>
 </head>
 
 <body>
-	<div class="bg-light">
-		<nav class="navbar navbar-light bg-dark">
-			<div class="text-light" style="font-size: 30px;">Play Chess</div>
-		</nav>
+	<nav class="p-2 px-5" style="background:  rgba(0,0,0,0.2);">
+		<div class="text-light" style="font-size: 30px;">Play Chess</div>
+	</nav>
+	<div class="flex-page">
+		<div class="side-nav" style="background: rgba(0,0,0,0.2);">
+			<ul>
+				<li><a href="{{ url_for('comvscom') }}">Com vs Com</a></li>
+				<li><a href="{{ url_for('playcom') }}">Play Com</a></li>
+				<li><a href="{{ url_for('login') }}" class="login-btn">Login</a></li>
+				<li><a href="{{ url_for('login') }}" class="signup-btn">Register</a></li>
+			</ul>
+		</div>
+
 		<div class="container">
 			<h1 class="text-center py-2 font-weight-light">Play Chess</h1>
 			<div class="row">
-				<div class="col-md-6 mb-5 nopadding text-center">
+				<div class="col-md-6 mb-5 text-center">
+					<div class="board" id="myBoard"></div>
+					<div class="center overlay"></div>
 					<div class="center">
 						<button class="play">Play</button>
 					</div>
-					<div class="board" id="myBoard" style="visibility: hidden;"></div>
 				</div>
-				<div class="col-md-6 jumbotron bg-dark text-light mb-5">
+				<div class="col-md-4 jumbotron text-light"
+					style="background-color: rgba(0,0,0,0.2); margin-left: 144px;">
 					<div id="status" class="font-weight-bold"></div>
 					<label>PGN:</label>
 					<div id="pgn" class="font-weight-light font-italic"></div>
@@ -36,100 +48,6 @@
 					</div>
 				</div>
 			</div>
-			<style>
-
-			</style>
-			<script>
-			var board = null
-			var game = new Chess()
-			var $status = $('#status')
-			var $pgn = $('#pgn')
-
-			function moveMove(bmove) {
-				var possibleMoves = game.moves()
-					// exit if the game is over
-				if(game.game_over()) return
-				game.move(bmove, {
-					sloppy: true
-				})
-				board.position(game.fen())
-				window.setTimeout(moveMove, 500)
-				updateStatus()
-			}
-
-			function updateStatus() {
-				var status = ''
-				var moveColor = 'White'
-				if(game.turn() === 'b') {
-					moveColor = 'Black'
-				} else {
-					moveColor = 'White'
-				}
-				// checkmate?
-				if(game.in_checkmate()) {
-					status = 'Game over, ' + moveColor + ' is in checkmate.'
-				}
-				// draw?
-				else if(game.in_draw()) {
-					status = 'Game over, drawn position'
-				}
-				// game still on
-				else {
-					status = moveColor + ' to move'
-						// check?
-					if(game.in_check()) {
-						status += ', ' + moveColor + ' is in check'
-					}
-				}
-				$status.html(status)
-				$pgn.html(game.pgn())
-			}
-			var config = {
-				draggable: true,
-				position: 'start'
-			}
-			board = Chessboard('myBoard', config)
-			$(document).ready(function() {
-				//connect to the socket server.
-				$(".play").click(function() {
-					$(".board").css("visibility", "visible");
-					$(".play").hide();
-					$(".stop").css("visibility", "visible");
-					var socket = io.connect('http://' + document.domain + ':' + location.port + '/comvscom');
-					socket.emit('btn', {
-						data: 'I\'m connected!'
-					});
-					var move_received = [];
-					//receive details from server
-					socket.on('move', function(msg) {
-						console.log("Received move" + msg.bestmove);
-						//maintain a list of ten move
-						if(move_received.length >= 10) {
-							move_received.shift()
-						}
-						move_received.push(msg.bestmove);
-						moveMove(msg.bestmove);
-					});
-					$(window).on('unload', function() {
-						socket.emit("stop", {
-							data: 'I\'m reloaded'
-						});
-						board.position("start");
-						game.reset();
-					});
-					$(".stop").click(function() {
-						$(".board").css("visibility", "hidden");
-						$(".play").fadeIn();
-						$(".stop").css("visibility", "hidden");
-						socket.emit("stop", {
-							data: 'I\'m reseted'
-						});
-						board.position("start");
-						game.reset();
-					});
-				});
-			});
-			</script>
 		</div>
 	</div>
 </body>

@@ -1,6 +1,99 @@
-.nopadding {
-    padding: 0 !important;
+* {
+    box-sizing: border-box;
+  }
+  .login-btn {
+    background-color: #0ba055;
+    border-radius: 20px;
+    margin: 20px;
+    text-align: center;
+    position: absolute;
+    top: 90%;
+    -ms-transform: translateY(-90%);
+    transform: translateY(-90%);
+    padding: 10px 40px !important;
 }
+
+.login-btn:hover {
+    background-color: #0ba055 !important;
+    box-shadow: 0 0 5px#0ba055, 0 0 5px #0ba055, 0 0 10px #0ba055,
+        0 0 15px #0ba055;
+}
+
+.signup-btn {
+    background-color: #b67c00;
+    border-radius: 20px;
+    margin: 20px;
+    text-align: center;
+    position: absolute;
+    top: 80%;
+    -ms-transform: translateY(-80%);
+    transform: translateY(-80%);
+    padding: 10px 30px !important;
+}
+
+.signup-btn:hover {
+    background-color: #b67c00 !important;
+    box-shadow: 0 0 5px#b67c00, 0 0 5px #b67c00, 0 0 10px #b67c00,
+        0 0 15px #b67c00;
+}
+
+.overlay {
+    position: absolute;
+    display: block;
+    width: 95%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    right: 50%;
+    bottom: 50%;
+    background-color: rgba(22, 34, 53, 0.5);
+    backdrop-filter: blur(3px);
+    border: 2px rgba(0, 0, 0, 0.2);
+}
+ 
+  html {
+    height: 100%;
+    background: linear-gradient(#141e30, #243b55);
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: linear-gradient(#141e30, #243b55);
+  }
+  
+  .flex-page {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .side-nav {
+    display: flex;
+    background: #0ba055;
+    padding-top: 1.5rem;
+  }
+  
+  .side-nav ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .side-nav ul li a {
+    padding: 0.75rem 2rem;
+    color: #ecf0f1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: block;
+  }
+  .side-nav ul li a:hover {
+    background: #0ba055;
+  }
+  .side-nav ul li a:focus {
+    background: #2c3e50;
+  }
 
 .center {
     margin: 0;
@@ -30,6 +123,7 @@
     border: none;
     border-radius: 15px;
     box-shadow: 0 5px #999;
+    z-index: 999;
 }
 
 .play:hover {
